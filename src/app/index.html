@@ -1,0 +1,206 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Graphs plugin</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" href="styles/bootstrap.css">
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+
+<script type="text/javascript" src="scripts/ASCIIsvg.js"></script>
+<script type="text/javascript" src="scripts/asciisvgdlg.js"></script>
+
+<body ng-app="appSrcApp" onload="AsciisvgDialog.init()">
+
+<!--[if lte IE 8]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+  your browser</a> to improve your experience.
+</p>
+<![endif]-->
+<div class="container" ng-controller="MainCtrl as $ctrl" id="main" style="visibility: hidden">
+  <ul class="nav nav-tabs">
+    <li class="nav-item" ng-repeat="graph in $ctrl.graphs track by $index">
+      <a class="nav-link"
+         ng-class="(graph.id === $ctrl.selectedGraph.id)? 'active': ''"
+         ng-click="$ctrl.selectGraph(graph)">Graph
+        {{$index+1}}</a>
+    </li>
+    <li class="nav-item"><a class="nav-link" href="javascript:void(0);" ng-click="$ctrl.addGraph()">[+]</a></li>
+    <li class="col"></li>
+    <li class="nav-item">
+      <button class="btn btn-primary" ng-click="$ctrl.showGridPropertiesScreen()">Grid</button>
+    </li>
+  </ul>
+
+  <form ng-submit="$ctrl.submit();">
+    <div ng-show="!$ctrl.showGridProperties">
+      <div class="row">
+        <div class="col">
+          <div class="form-inline">
+            <label class="mr-sm-2" for="graph-type">Type</label>
+            <select class="form-control" name="graph-type" id="graph-type" ng-model="$ctrl.selectedGraph.type"
+                    ng-change="$ctrl.updateType()">
+              <option value="func">y=f(x)</option>
+              <option value="polar">r=f(t)</option>
+              <option value="param">x=f(t),y=g(t)</option>
+              <option value="slope">dy/dx = f(x,y)</option>
+              <!--<option value="label">label</option>-->
+            </select>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-inline d-flex"><label class="mr-sm-2" for="graph-function">{{
+            $ctrl.defValues[$ctrl.selectedGraph.type][0] }} =</label> <input
+            class="form-control col" type="text" name="graph-function" id="graph-function"
+            ng-model="$ctrl.selectedGraph.function"></div>
+        </div>
+        <div class="col" ng-if="$ctrl.selectedGraph.function2">
+          <div class="form-inline d-flex"><label class="mr-sm-2" for="graph-function2">{{
+            $ctrl.defValues[$ctrl.selectedGraph.type][1] || '' }} =</label> <input
+            class="form-control col" type="text" name="graph-function2" id="graph-function2"
+            ng-model="$ctrl.selectedGraph.function2" placeholder="sin(x)"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6 d-flex">
+          <label for="graph-from" class="col-form-label">Starts from:</label>
+          <div class="col"><input type="graph-from" class="form-control form-control" id="graph-from"
+                                  ng-model="$ctrl.selectedGraph.from"></div>
+        </div>
+        <div class="col-6 d-flex">
+          <label for="graph-to" class="col-form-label">Ends on:</label>
+          <div class="col"><input type="graph-to" class="form-control form-control" id="graph-to"
+                                  ng-model="$ctrl.selectedGraph.to"></div>
+        </div>
+      </div>
+
+      <p class="text-right" ng-show="!$ctrl.showGraphStyle">
+        <a href="javascript:void(0);" ng-click="$ctrl.showGraphStyle = true;">Show Graph Style</a>
+      </p>
+
+      <div ng-show="$ctrl.showGraphStyle">
+        <div class="form-group row">
+          <label for="graph-line-color" class="col-2 col-form-label">Color</label>
+          <div class="col-10"><input class="form-control" type="text" id="graph-line-color" name="graph-line-color"
+                                     ng-model="$ctrl.selectedGraph.lineColor"></div>
+        </div>
+        <div class="form-group row">
+          <label for="graph-line-size" class="col-2 col-form-label">Line size</label>
+          <div class="col-10">
+            <select class="form-control" name="graph-line-size" id="graph-line-size"
+                    ng-model="$ctrl.selectedGraph.lineSize">
+              <option value="1">1px</option>
+              <option value="2">2px</option>
+              <option value="3">3px</option>
+              <option value="4">4px</option>
+              <option value="5">5px</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="graph-line-type" class="col-2 col-form-label">Line type</label>
+          <div class="col-10">
+            <select class="form-control" name="graph-line-type" id="graph-line-type"
+                    ng-model="$ctrl.selectedGraph.lineType">
+              <option value="none">Solid</option>
+              <option value="2">Dotted</option>
+              <option value="5">Dashed</option>
+              <option value="5 2">Tight Dash</option>
+              <option value="7 3 2 3">Dash-Dot</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div ng-show="$ctrl.showGridProperties">
+      <div class="row">
+        <div class="col-6 d-flex">
+          <label for="grid-width" class="col-form-label">Width:</label>
+          <div class="col"><input type="grid-width" class="form-control form-control" id="grid-width"
+                                  ng-model="$ctrl.grid.width"></div>
+        </div>
+        <div class="col-6 d-flex">
+          <label for="grid-height" class="col-form-label">Height:</label>
+          <div class="col"><input type="grid-height" class="form-control form-control" id="grid-height"
+                                  ng-model="$ctrl.grid.height"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-4 d-flex">
+          <label for="grid-x-min" class="col-form-label-sm">x-min:</label>
+          <div class="col"><input type="grid-x-min" class="form-control form-control-sm" id="grid-x-min"
+                                  ng-model="$ctrl.grid.xMin"></div>
+        </div>
+        <div class="col-4 d-flex">
+          <label for="grid-x-max" class="col-form-label-sm">x-max:</label>
+          <div class="col"><input type="grid-x-max" class="form-control form-control-sm" id="grid-x-max"
+                                  ng-model="$ctrl.grid.xMax"></div>
+        </div>
+        <div class="col-4 d-flex">
+          <label for="grid-x-step" class="col-form-label-sm">x-step:</label>
+          <div class="col"><input type="grid-x-step" class="form-control form-control-sm" id="grid-x-step"
+                                  ng-model="$ctrl.grid.xStep"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-4 d-flex">
+          <label for="grid-y-min" class="col-form-label-sm">y-min:</label>
+          <div class="col"><input type="grid-y-min" class="form-control form-control-sm" id="grid-y-min"
+                                  ng-model="$ctrl.grid.yMin"></div>
+        </div>
+        <div class="col-4 d-flex">
+          <label for="grid-y-max" class="col-form-label-sm">y-max:</label>
+          <div class="col"><input type="grid-y-max" class="form-control form-control-sm" id="grid-y-max"
+                                  ng-model="$ctrl.grid.yMax"></div>
+        </div>
+        <div class="col-4 d-flex">
+          <label for="grid-y-step" class="col-form-label-sm">y-step:</label>
+          <div class="col"><input type="grid-y-step" class="form-control form-control-sm" id="grid-y-step"
+                                  ng-model="$ctrl.grid.yStep"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col"><label class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" ng-model="$ctrl.grid.showLabels">
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description">Show labels</span> </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col"><label class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" ng-model="$ctrl.grid.showBackgroundGrid">
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description">Show background grid</span>
+        </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col text-left">
+        <button type="submit" class="btn btn-primary">Update</button>
+      </div>
+      <div class="col text-right">
+        <button type="submit" class="btn btn-danger" ng-show="$ctrl.graphs.length > 1" ng-click="$ctrl.deleteGraph();">
+          Delete
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <hr>
+
+  <div id="preview" class="text-center">
+    <embed id="previewsvg" type="image/svg+xml"
+           style="width: 300px; height: 200px; vertical-align: middle; float: none;"
+           sscr="-7.5,7.5,-5,5,1,1,1,1,1,300,200"/>
+  </div>
+</div>
+
+<script src="scripts/angular.min.js"></script>
+<script src="scripts/scripts.js"></script>
+
+</body>
+</html>

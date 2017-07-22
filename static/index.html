@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+  <script>
+    tinymce.init({
+      selector: 'textarea',
+      toolbar: 'graphTinymcePlugin',
+      external_plugins: {'graphTinymcePlugin': 'http://localhost:8080/src/plugin.js'},
+      graph_uploader: function (file, cb) {
+        // Here is your uploader logic, start to upload you image here like that:
+
+        // yourUploader.sendIMG(file.blob)
+        //   .then(function(url){
+        //      // Take a look at "class='tinymce-graph'" and "graph-data='" + file.graphData + "'", it is really important to keep it in the tag - that's way you able to edit your graph.
+        //      cb("<img class='tinymce-graph' graph-data='" + file.graphData + "' width='" + file.width + "' height='" + file.height + "' src='" + url + "' />");
+        //   });
+
+        // or just put SVG-html into your content. Example:
+        var content = file.html;
+        cb(content);
+      }
+    });
+  </script>
+</head>
+<body>
+
+<textarea>Testing graphTinymcePlugin</textarea>
+</body>
+</html>
