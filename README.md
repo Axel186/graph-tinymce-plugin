@@ -3,7 +3,8 @@
 With this plugin you able to add Vector Graphics into your content. Build your own diagrams/graphs by using mathematics functions.
 This plugin using [Asciisvg.js](http://www1.chapman.edu/~jipsen/svg/asciisvg.html) libary for rendering graphs.
 
-Reference and ideas taken from this project: http://www.imathas.com/editordemo/demo.html
+Reference and ideas taken from this project: http://www.imathas.com/editordemo/demo.html.
+
 This plugin compatible with TinyMce 4.
 
 ![Charts TinyMCE Plugin - Visual demo](demo.gif)
