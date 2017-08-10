@@ -32,6 +32,12 @@ module.exports = {
         from: path.join(__dirname, '../LICENSE'),
         to: path.join(__dirname, '../dist', pluginName)
       }
+    ]),
+    new CopyWebpackPlugin([
+      {
+        from: path.join(__dirname, '../src/app'),
+        to: path.join(__dirname, '../dist/'+pluginName, 'app')
+      }
     ])
   ]
 }
